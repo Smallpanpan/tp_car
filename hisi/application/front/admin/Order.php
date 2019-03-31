@@ -17,22 +17,10 @@ use think\Db;
 class Order extends Controller
 {
     public function test(){
-        $orderId  = input('orderId');
-    $carorder = ModelOrder::get($orderId);
-    $data['progress']= $carorder->o_status;
-    $data['all_price']=$carorder-> o_all_price;
-    echo json_encode($data);
+       $now = time();
+       echo $now;
+       // $this->createorder(1,24,0,1,1004,1);
     }
-//    选取正在进行的订单
-//public function gethisorder(){
-//    $orderId = input('orderId');
-//    $carorder = Order::get($orderId);
-//    $data['progress']= $carorder->o_status;
-//    $data['all_price']=$carorder-> o_all_price;
-//    echo json_encode($data);
-//    $now = time();
-//    echo $now;
-//}
     // 展示我的订单信息
     public function myorder(){
         $arr = Secure::all();
@@ -50,39 +38,36 @@ class Order extends Controller
     *@param      integer        $site_id             [网点ID] 
     *@param      integer        $asset_id            [优惠券ID] 
     *
-    *@return
-     *
-     *
-     *
-     *
+    *@return     string         
     */
     public function createorder()
     {
+        // 获取参数运行
+        $arges = func_get_args();
+       
 
-          // 输入测试
-//        $user_id = 5;                //用户ID
-//        $carstatus_id =43 ;      //临时订单编号
-//        $status =1;                  //支付状态
-//        $insurance_id =1;      //保险ID
-//        $site_id =1003;                //网点ID
-//        $asset_id =1;              //优惠券ID
-//        asset_id: 1
-
-
-
-        $user_id = input('userid');                //用户ID
+        // 输入
+        $user_id = input('user_id');                //用户ID
         $carstatus_id = input('carstatus_id');      //临时订单编号
         $status = input('status');                  //支付状态
         $insurance_id = input('insurance_id');      //保险ID
         $site_id = input('site_id');                //网点ID
         $asset_id = input('asset_id');              //优惠券ID
+         if($arges){
+          $user_id = $arges[0];
+          $carstatus_id  = $arges[1];
+          $status = $arges[2];
+          $insurance_id  = $arges[3];
+          $site_id  = $arges[4];
+          $asset_id = $arges[5];
 
-
+        }
+        
 
         // 获得汽车的临时时间表：汽车ID   获取时间
         $carstatus = Carstatus::get($carstatus_id);
-        $start = $carstatus->startTime;          //起租时间
-        $end = $carstatus->endTime;              //起租时间
+        $start = $carstatus->startTime;
+        $end = $carstatus->endTime;
         $carlistid = $carstatus->car_id;     //获取汽车ID
         // 计算常规费用
         // 由汽车ID得出汽车基础服务费，单价
@@ -125,13 +110,25 @@ class Order extends Controller
         $myorder->o_coupon_price  = $coupon_price;
         $myorder->o_all_price  = $all_price;
         $myorder->o_carstatusid = $carstatus_id;
-        $myorder->	o_status = 1;
-
-//返回真在进行订单参数
+        
 
         if($myorder->save()){
            $data['order_id'] = $myorder->id;
-           $data['start']  =time();
+           $data['date_8']  =$date_8;
+           $data['date_4']  =$date_4;
+           $data['date']    =$date;
+           $data['price_4'] =$charge4;
+           $data['price_8'] =$charge8;
+           $data['all_price']  =$all_price;
+           $data['message'] = '1';                  //插入状态
+           $data['car_id'] =$carlistid ;                //汽车ID
+           $data['car_number'] = $carlist->car_number ;     //汽车号码 
+           $data['car_servuce'] = $carsystem->car_servuce ;
+           $data['car_daily_price'] = $carsystem->car_daily_price ;
+           $data['system_id'] = $carsystem->system_id ;
+           $data['u_id'] = $user_id ;
+           $data['coupon_price'] = $coupon_price ;
+           $data['insurance_price'] = $insurance_price;
             echo json_encode($data);
             return;
         }else{

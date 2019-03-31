@@ -9,7 +9,6 @@ use app\index\model\Carstatus;
 use app\index\model\Carsready;
 use app\index\model\User;
 use app\index\model\Secure;
-use app\index\model\Asset;
 
 class Car extends Controller
 {
@@ -154,7 +153,7 @@ class Car extends Controller
         $date = $price1[1];             //天数
         $date_4 = $price1[3];           //是否在0-4小时区间
         $date_8 = $price1[2];           //是否在4-8小时区间
-    	$asset = Asset::all();			//优惠券类型二维数组
+    	$asset = $user->asset;			//优惠券类型二维数组
     	$secure = Secure::all();						//保险类型列表
 	   $data['carstatusid'] = $carstatusModel->id; 		//临时表ID
 	   $data['date_8']	=$date_8;
@@ -187,8 +186,7 @@ class Car extends Controller
 	   $arr['data'] = $data;
 	   $arr['asset'] = $asset;
 	   $arr['secure'] = $secure;
-
-	  	echo json_encode($arr);
+	  	echo json_encode($arr);	 
 	}
 // 退出订单接口
 	public function quitOrder(){
